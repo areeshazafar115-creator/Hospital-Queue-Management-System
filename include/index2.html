@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saviour Hospital | Enterprise Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- 1. SPLASH SCREEN -->
+    <div id="splash-screen" class="full-overlay">
+        <div class="welcome-box">
+            <div class="medical-logo"><i class="fa-solid fa-house-medical-circle-check"></i></div>
+            <h1>SAVIOUR <span>HOSPITAL</span></h1>
+            <p>Loading Enterprise Management System...</p>
+            <div class="loading-bar"><div class="progress"></div></div>
+        </div>
+    </div>
+
+    <!-- 2. LOGIN/AUTH SCREEN -->
+    <div id="auth-screen" class="full-overlay" style="display: none;">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>Medical Portal</h2>
+                <p>Secure Access for Staff & Patients</p>
+            </div>
+            <div class="tabs">
+                <button onclick="toggleAuth('login')" id="tab-login" class="active">LOGIN</button>
+                <button onclick="toggleAuth('register')" id="tab-register">NEW REGISTRATION</button>
+            </div>
+            <div id="login-form">
+                <div class="input-field"><label>Patient ID</label><input type="number" id="loginID" placeholder="Enter ID"></div>
+                <button onclick="handleLogin()" class="main-btn">ACCESS SYSTEM <i class="fa-solid fa-shield-halved"></i></button>
+            </div>
+            <div id="register-form" style="display: none;">
+                <div class="reg-grid">
+                    <div class="input-field"><label>Full Name</label><input type="text" id="regName"></div>
+                    <div class="input-field"><label>Age</label><input type="number" id="regAge"></div>
+                    <div class="input-field"><label>Gender</label>
+                        <select id="regGender"><option>Male</option><option>Female</option><option>Other</option></select>
+                    </div>
+                    <div class="input-field"><label>Contact</label><input type="text" id="regContact"></div>
+                    <div class="input-field full"><label>Department</label>
+                        <select id="regDept">
+                            <option>Cardiology</option><option>Neurology</option><option>Orthopedics</option><option>General OPD</option>
+                        </select>
+                    </div>
+                    <div class="input-field full"><label>Priority Level</label>
+                        <select id="regPriority">
+                            <option value="3">Normal (Green)</option>
+                            <option value="2">Serious (Orange)</option>
+                            <option value="1">Critical Emergency (Red)</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="handleRegister()" class="main-btn">REGISTER & GENERATE TOKEN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. MAIN SYSTEM LAYOUT -->
+    <div id="main-layout" style="display: none;">
+        <aside class="sidebar">
+            <div class="side-logo"><i class="fa-solid fa-circle-h"></i> SAVIOUR</div>
+            <nav>
+                <div class="nav-item active" onclick="showScreen('dashboard')"><i class="fa-solid fa-chart-pie"></i> Dashboard</div>
+                <div class="nav-item" onclick="showScreen('live-queue')"><i class="fa-solid fa-users-viewfinder"></i> Live Queue</div>
+                <div class="nav-item" onclick="showScreen('appointments')"><i class="fa-solid fa-calendar-check"></i> Appointments</div>
+                <div class="nav-item" onclick="showScreen('doctors')"><i class="fa-solid fa-user-doctor"></i> Doctors</div>
+                <div class="nav-item" onclick="showScreen('patients')"><i class="fa-solid fa-bed-pulse"></i> Patients</div>
+                <div class="nav-item" onclick="showScreen('billing')"><i class="fa-solid fa-file-invoice-dollar"></i> Billing</div>
+                <div class="nav-item" onclick="showScreen('reports')"><i class="fa-solid fa-file-contract"></i> Reports</div>
+                <div class="nav-item logout" onclick="exitSystem()"><i class="fa-solid fa-power-off"></i> Logout</div>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <header class="top-bar">
+                <div class="search-box"><i class="fa-solid fa-magnifying-glass"></i> <input type="text" placeholder="Search data..."></div>
+                <div class="user-profile">
+                    <i class="fa-solid fa-bell notification-icon" onclick="toggleNotify()"></i>
+                    <div class="profile-info"><span>Medical Admin</span><small>Super User</small></div>
+                </div>
+            </header>
+
+            <!-- SCREENS -->
+            
+            <!-- SCREEN: DASHBOARD -->
+            <section id="screen-dashboard" class="screen">
+                <div class="screen-header"><h2>System Overview</h2><p>Real-time analytics and notifications</p></div>
+                <div class="stats-grid">
+                    <div class="stat-card"><h3>Total Patients</h3><p id="stat-total">0</p><i class="fa-solid fa-users"></i></div>
+                    <div class="stat-card emergency"><h3>Emergency</h3><p id="stat-emergency">0</p><i class="fa-solid fa-truck-medical"></i></div>
+                    <div class="stat-card"><h3>Available Doctors</h3><p>12</p><i class="fa-solid fa-user-check"></i></div>
+                    <div class="stat-card"><h3>Avg Wait Time</h3><p>14m</p><i class="fa-solid fa-clock"></i></div>
+                </div>
+                <div class="dashboard-lower">
+                    <div class="chart-container"><h3>Weekly Admissions</h3><div class="placeholder-chart">Chart Loading...</div></div>
+                    <div class="recent-alerts"><h3>Live Notifications</h3><div id="notif-list"></div></div>
+                </div>
+            </section>
+
+            <!-- SCREEN: LIVE QUEUE -->
+            <section id="screen-live-queue" class="screen" style="display:none;">
+                <div class="screen-header">
+                    <h2>Live Patient Queue</h2>
+                    <div class="action-btns">
+                        <button class="btn-sec" onclick="playAlert()"><i class="fa-solid fa-volume-high"></i> Display Board</button>
+                    </div>
+                </div>
+                <div class="queue-stats-row">
+                    <div class="q-mini-card">Current Serving: <strong id="now-serving">None</strong></div>
+                    <div class="q-mini-card">Next Patient: <strong id="next-serving">None</strong></div>
+                </div>
+                <div class="table-container">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>Token</th><th>Patient Name</th><th>Priority</th><th>Doctor</th><th>Dept</th><th>Wait</th><th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="queue-table-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SCREEN: APPOINTMENTS -->
+            <section id="screen-appointments" class="screen" style="display:none;">
+                <div class="screen-header"><h2>Appointment Scheduling</h2></div>
+                <div class="appointment-layout">
+                    <div class="booking-form-container">
+                        <h3>Book New Appointment</h3>
+                        <div class="form-grid">
+                            <input type="text" placeholder="Patient Name">
+                            <input type="date">
+                            <select><option>Select Doctor</option><option>Dr. Ahmed</option></select>
+                            <button class="main-btn">Confirm Booking</button>
+                        </div>
+                    </div>
+                    <div class="calendar-placeholder">
+                        <h3>Schedule Calendar</h3>
+                        <div class="mock-calendar">Calendar View UI...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SCREEN: DOCTORS -->
+            <section id="screen-doctors" class="screen" style="display:none;">
+                <div class="screen-header"><h2>Medical Specialists</h2></div>
+                <div class="doctor-grid" id="doctor-list-grid">
+                    <!-- Cards will be injected by JS -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Public Display (Overlay) -->
+    <div id="public-display" class="display-overlay" style="display:none;" onclick="this.style.display='none'">
+        <div class="display-content">
+            <h1>NOW SERVING</h1>
+            <div class="token-large" id="display-token">--</div>
+            <p>Please proceed to consultation room</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
